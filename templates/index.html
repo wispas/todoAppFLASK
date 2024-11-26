@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Todo List</h1>
+        
+        <!-- Add Todo Form -->
+        <form action="{{ url_for('add') }}" method="POST" class="mb-8">
+            <div class="flex gap-2">
+                <input type="text" name="title" placeholder="Add a new todo..." required
+                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500">
+                <button type="submit" 
+                    class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                    Add
+                </button>
+            </div>
+        </form>
+
+        <!-- Todo List -->
+        <div class="space-y-3">
+            {% for todo in todos %}
+            <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition duration-200
+                        {{ 'opacity-75' if todo.completed else '' }}">
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('complete', id=todo.id) }}" class="text-gray-400 hover:text-green-500">
+                        <i class="fas fa-check-circle text-xl {{ 'text-green-500' if todo.completed else '' }}"></i>
+                    </a>
+                    <span class="text-gray-800 {{ 'line-through' if todo.completed else '' }}">{{ todo.title }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-500">{{ todo.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                    <a href="{{ url_for('delete', id=todo.id) }}" class="text-red-400 hover:text-red-600">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            {% if not todos %}
+            <div class="text-center text-gray-500 py-8">
+                No todos yet. Add one above!
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Add smooth fade-out effect for completed todos
+        document.querySelectorAll('.fa-check-circle').forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                const todoItem = this.closest('.flex.items-center.justify-between');
+                todoItem.style.transition = 'opacity 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html> 
